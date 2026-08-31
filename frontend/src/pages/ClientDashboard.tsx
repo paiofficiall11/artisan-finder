@@ -84,7 +84,7 @@ export default function ClientDashboard() {
                 Active
               </h2>
               <div className="mt-3 space-y-4">
-                {active.map((booking) => (
+                {active.map((booking, index) => (
                   <BookingCard
                     key={booking.$id}
                     booking={booking}
@@ -92,6 +92,7 @@ export default function ClientDashboard() {
                     counterpart={data?.profiles[booking.artisanId]}
                     onAction={handleAction}
                     busy={busyId === booking.$id}
+                    delay={index * 90}
                   />
                 ))}
               </div>
@@ -104,12 +105,13 @@ export default function ClientDashboard() {
                 History
               </h2>
               <div className="mt-3 space-y-4">
-                {history.map((booking) => (
+                {history.map((booking, index) => (
                   <BookingCard
                     key={booking.$id}
                     booking={booking}
                     role="client"
                     counterpart={data?.profiles[booking.artisanId]}
+                    delay={index * 70}
                   />
                 ))}
               </div>

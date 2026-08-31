@@ -109,17 +109,20 @@ export default function Search() {
       ) : result && result.items.length > 0 ? (
         <>
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {result.items.map((artisan) => (
-              <ArtisanCard key={artisan.$id} artisan={artisan} />
+            {result.items.map((artisan, index) => (
+              <ArtisanCard key={artisan.$id} artisan={artisan} delay={(index % 6) * 70} />
             ))}
           </div>
 
           {result.totalPages > 1 && (
-            <div className="mt-8 flex items-center justify-center gap-4">
+            <div
+              className="mt-8 flex items-center justify-center gap-4 animate-fade-up"
+              style={{ animationDelay: '200ms' }}
+            >
               <button
                 disabled={result.page <= 1}
                 onClick={() => setPage((current) => current - 1)}
-                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
+                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:border-amber-400 hover:bg-amber-50 disabled:opacity-40"
               >
                 ← Previous
               </button>
@@ -129,14 +132,14 @@ export default function Search() {
               <button
                 disabled={result.page >= result.totalPages}
                 onClick={() => setPage((current) => current + 1)}
-                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
+                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:border-amber-400 hover:bg-amber-50 disabled:opacity-40"
               >
                 Next →
               </button>
             </div>
           )}
         </>
-      ) : (
+      ) : !error ? (
         <div className="mt-16 rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
           <p className="text-lg font-semibold text-slate-700">No artisans found</p>
           <p className="mt-1 text-sm text-slate-500">
@@ -149,7 +152,7 @@ export default function Search() {
             Clear filters
           </button>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

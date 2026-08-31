@@ -5,7 +5,9 @@ const cors = require('@fastify/cors');
 const jwt = require('@fastify/jwt');
 const rateLimit = require('@fastify/rate-limit');
 const multipart = require('@fastify/multipart');
+const fastifyStatic = require('@fastify/static');
 
+const { uploadsDir } = require('./db');
 const { errorHandler, notFoundHandler } = require('./middleware/error-handler');
 const healthRoutes = require('./routes/health.routes');
 const categoriesRoutes = require('./routes/categories.routes');
@@ -43,6 +45,13 @@ async function buildApp() {
     limits: { fileSize: 5 * 1024 * 1024, files: 1 },
   });
 
+  // Locally uploaded avatars / portfolio images
+  await app.register(fastifyStatic, {
+    root: uploadsDir,
+    prefix: '/uploads/',
+    decorateReply: false,
+  });
+
   app.setErrorHandler(errorHandler);
   app.setNotFoundHandler(notFoundHandler);
 
@@ -55,17 +64,22 @@ async function buildApp() {
   return app;
 }
 
-buildApp()
-  .then((app) => {
-    const port = Number(process.env.PORT) || 8080;
-    app.listen({ port, host: '0.0.0.0' }, (error) => {
-      if (error) {
-        app.log.error(error);
-        process.exit(1);
-      }
+// Only auto-listen when run directly (not when imported by tests/scripts).
+if (require.main === module) {
+  buildApp()
+    .then((app) => {
+      const port = Number(process.env.PORT) || 8080;
+      app.listen({ port, host: '0.0.0.0' }, (error) => {
+        if (error) {
+          app.log.error(error);
+          process.exit(1);
+        }
+      });
+    })
+    .catch((error) => {
+      console.error('Failed to start server:', error.message);
+      process.exit(1);
     });
-  })
-  .catch((error) => {
-    console.error('Failed to start server:', error.message);
-    process.exit(1);
-  });
+}
+
+module.exports = { buildApp };

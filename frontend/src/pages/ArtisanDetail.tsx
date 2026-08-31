@@ -60,17 +60,17 @@ export default function ArtisanDetail() {
         ← Back to search
       </Link>
 
-      <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-8">
+      <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-8 animate-scale-in">
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div className="flex items-start gap-5">
             {avatar ? (
               <img
                 src={avatar}
                 alt={artisan.fullName}
-                className="h-20 w-20 rounded-full border border-slate-200 object-cover"
+                className="h-20 w-20 rounded-full border border-slate-200 object-cover animate-pop"
               />
             ) : (
-              <span className="flex h-20 w-20 items-center justify-center rounded-full bg-amber-100 text-3xl font-bold text-amber-700">
+              <span className="flex h-20 w-20 items-center justify-center rounded-full bg-amber-100 text-3xl font-bold text-amber-700 animate-pop">
                 {artisan.fullName.charAt(0).toUpperCase()}
               </span>
             )}

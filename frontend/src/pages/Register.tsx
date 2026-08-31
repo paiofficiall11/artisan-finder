@@ -57,21 +57,21 @@ export default function Register() {
 
   return (
     <div className="mx-auto max-w-md px-4 py-16">
-      <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <h1 className="text-2xl font-bold text-slate-900">Create your account</h1>
-        <p className="mt-1 text-sm text-slate-500">
+      <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm animate-scale-in">
+        <h1 className="animate-fade-up text-2xl font-bold text-slate-900">Create your account</h1>
+        <p className="mt-1 animate-fade-up text-sm text-slate-500" style={{ animationDelay: '80ms' }}>
           Join as a client to book artisans, or as an artisan to get hired.
         </p>
 
         {errors.length > 0 && (
-          <div className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">
+          <div className="mt-4 animate-fade-up rounded-lg bg-red-50 p-3 text-sm text-red-700">
             {errors.map((message) => (
               <p key={message}>{message}</p>
             ))}
           </div>
         )}
 
-        <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1">
+        <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1 animate-fade-up" style={{ animationDelay: '120ms' }}>
           {(['client', 'artisan'] as const).map((option) => (
             <button
               key={option}

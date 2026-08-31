@@ -89,17 +89,29 @@ export default function ArtisanDashboard() {
           { label: 'Pending requests', value: pending.length, accent: 'text-amber-600' },
           { label: 'Accepted jobs', value: accepted.length, accent: 'text-blue-600' },
           { label: 'Completed jobs', value: completed.length, accent: 'text-emerald-600' },
-        ].map((stat) => (
-          <div key={stat.label} className="rounded-xl border border-slate-200 bg-white p-5">
+        ].map((stat, index) => (
+          <div
+            key={stat.label}
+            className="rounded-xl border border-slate-200 bg-white p-5 transition hover:-translate-y-1 hover:border-amber-300 hover:shadow-md animate-scale-in"
+            style={{ animationDelay: `${index * 90}ms` }}
+          >
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
               {stat.label}
             </p>
-            <p className={`mt-1 text-3xl font-bold ${stat.accent}`}>{stat.value}</p>
+            <p
+              className={`mt-1 text-3xl font-bold ${stat.accent} animate-pop`}
+              style={{ animationDelay: `${150 + index * 90}ms` }}
+            >
+              {stat.value}
+            </p>
           </div>
         ))}
       </div>
 
-      <div className="mt-6 flex items-center justify-between rounded-xl border border-slate-200 bg-white p-5">
+      <div
+        className="mt-6 flex items-center justify-between rounded-xl border border-slate-200 bg-white p-5 transition hover:border-amber-300 hover:shadow-md animate-fade-up"
+        style={{ animationDelay: '300ms' }}
+      >
         <div>
           <p className="font-semibold text-slate-900">Availability</p>
           <p className="text-sm text-slate-500">
@@ -137,7 +149,7 @@ export default function ArtisanDashboard() {
               Incoming requests
             </h2>
             <div className="mt-3 space-y-4">
-              {[...pending, ...accepted].map((booking) => (
+              {[...pending, ...accepted].map((booking, index) => (
                 <BookingCard
                   key={booking.$id}
                   booking={booking}
@@ -145,6 +157,7 @@ export default function ArtisanDashboard() {
                   counterpart={data?.profiles[booking.clientId]}
                   onAction={handleAction}
                   busy={busyId === booking.$id}
+                  delay={index * 80}
                 />
               ))}
               {pending.length + accepted.length === 0 && (
@@ -165,12 +178,13 @@ export default function ArtisanDashboard() {
               <div className="mt-3 space-y-4">
                 {bookings
                   .filter((b) => ['declined', 'completed', 'cancelled'].includes(b.status))
-                  .map((booking) => (
+                  .map((booking, index) => (
                     <BookingCard
                       key={booking.$id}
                       booking={booking}
                       role="artisan"
                       counterpart={data?.profiles[booking.clientId]}
+                      delay={index * 60}
                     />
                   ))}
               </div>

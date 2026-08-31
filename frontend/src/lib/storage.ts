@@ -1,20 +1,19 @@
 /**
- * Public Appwrite Storage view URLs. Requires only the (non-secret) endpoint
- * and project ID; both buckets are public-read.
+ * Avatar / portfolio image URLs served by the backend's local /uploads static
+ * route. VITE_API_BASE_URL already points at the backend API root (…/api), so
+ * we strip the trailing /api to reach the uploads path.
  */
-const ENDPOINT = import.meta.env.VITE_APPWRITE_ENDPOINT as string | undefined;
-const PROJECT_ID = import.meta.env.VITE_APPWRITE_PROJECT_ID as string | undefined;
-const AVATARS_BUCKET = 'avatars';
-const PORTFOLIO_BUCKET = 'portfolio';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:8080/api';
+const BASE = API_BASE_URL.replace(/\/api\/?$/, '');
 
-function viewUrl(bucketId: string, fileId: string): string {
-  return `${ENDPOINT}/storage/buckets/${bucketId}/files/${fileId}/view?project=${PROJECT_ID}`;
+function viewUrl(bucket: string, fileId: string): string {
+  return `${BASE}/uploads/${bucket}/${fileId}`;
 }
 
 export function avatarUrl(fileId?: string | null): string | null {
-  return fileId ? viewUrl(AVATARS_BUCKET, fileId) : null;
+  return fileId ? viewUrl('avatars', fileId) : null;
 }
 
 export function portfolioUrl(fileId: string): string {
-  return viewUrl(PORTFOLIO_BUCKET, fileId);
+  return viewUrl('portfolio', fileId);
 }

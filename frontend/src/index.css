@@ -1,1 +1,328 @@
 @import "tailwindcss";
+
+/* ==========================================================================
+   Motion system — pure CSS keyframes + scroll-reveal helpers (no deps)
+   ========================================================================== */
+
+:root {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgb(251 191 36 / 0.35);
+}
+
+/* Focus visibility for keyboard users */
+:focus-visible {
+  outline: 2px solid rgb(217 119 6 / 0.6);
+  outline-offset: 2px;
+}
+
+/* Slim, on-brand scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(203 213 225) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(203 213 225);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(180 190 203);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Reusable entering animations                                       */
+/* ------------------------------------------------------------------ */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  70% {
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgb(16 185 129 / 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgb(16 185 129 / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(16 185 129 / 0);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes progress-flow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+/* Utility entry animations */
+.animate-fade-up {
+  animation: fade-up 0.7s var(--ease-out-expo) both;
+}
+.animate-fade-in {
+  animation: fade-in 0.7s ease both;
+}
+.animate-scale-in {
+  animation: scale-in 0.5s var(--ease-spring) both;
+}
+.animate-pop {
+  animation: pop 0.55s var(--ease-spring) both;
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+.animate-bounce-soft {
+  animation: bounce-soft 2.4s ease-in-out infinite;
+}
+.animate-spin-slow {
+  animation: spin-slow 14s linear infinite;
+}
+.animate-blink {
+  animation: blink 1.6s ease-in-out infinite;
+}
+.animate-pulse-ring {
+  animation: pulse-ring 2s var(--ease-out-expo) infinite;
+}
+.animate-slide-down {
+  animation: slide-down 0.5s var(--ease-out-expo) both;
+}
+
+/* Flowing highlight across a progress connector while a step is in flight */
+.progress-flow {
+  animation: progress-flow 1.8s linear infinite;
+}
+
+/* Shine sweep that runs once on hover (buttons/cards) */
+.shine-on-hover {
+  position: relative;
+  overflow: hidden;
+}
+.shine-on-hover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 70%
+  );
+  transition: transform 0.7s var(--ease-out-expo);
+}
+.shine-on-hover:hover::after {
+  transform: translateX(120%);
+}
+
+/* Stagger helper — set --d to N ms on the element for order */
+.stagger > * {
+  opacity: 0;
+  animation: fade-up 0.7s var(--ease-out-expo) forwards;
+  animation-delay: calc(var(--d, 0ms) + var(--i, 0) * 80ms);
+}
+
+/* Shimmering gradient bar (used on buttons / skeletons) */
+.shimmer {
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2.2s infinite;
+}
+
+/* Animated multi-stop gradient background */
+.anim-gradient {
+  background: linear-gradient(
+    120deg,
+    #f59e0b,
+    #fbbf24,
+    #f59e0b,
+    #f97316,
+    #fbbf24
+  );
+  background-size: 300% 300%;
+  animation: gradient-shift 10s ease infinite;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Scroll-reveal widget                                              */
+/* ------------------------------------------------------------------ */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(28px) scale(0.99);
+  transition:
+    opacity 0.7s var(--ease-out-expo),
+    transform 0.7s var(--ease-out-expo);
+  will-change: opacity, transform;
+  transition-delay: var(--d, 0ms);
+}
+
+.reveal.reveal-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.reveal-left {
+  transform: translateX(-28px);
+}
+.reveal-left.reveal-visible {
+  transform: translateX(0);
+}
+
+.reveal-right {
+  transform: translateX(28px);
+}
+.reveal-right.reveal-visible {
+  transform: translateX(0);
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .stagger > *,
+  .animate-fade-up,
+  .animate-fade-in,
+  .animate-scale-in,
+  .animate-pop,
+  .animate-float,
+  .animate-bounce-soft,
+  .anim-gradient,
+  .shimmer {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

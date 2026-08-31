@@ -24,3 +24,7 @@ Thumbs.db
 
 # Coverage
 coverage/
+
+# Local SQLite store + uploaded files
+backend/data/
+backend/uploads/

@@ -2,23 +2,24 @@ import { Link } from 'react-router-dom';
 import type { Profile } from '../types';
 import { avatarUrl } from '../lib/storage';
 
-export default function ArtisanCard({ artisan }: { artisan: Profile }) {
+export default function ArtisanCard({ artisan, delay = 0 }: { artisan: Profile; delay?: number }) {
   const avatar = avatarUrl(artisan.avatarFileId);
 
   return (
     <Link
       to={`/artisans/${artisan.$id}`}
-      className="group flex flex-col rounded-xl border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md"
+      className="group flex flex-col rounded-xl border border-slate-200 bg-white p-5 transition hover:-translate-y-1.5 hover:border-amber-300 hover:shadow-lg animate-fade-up"
+      style={{ animationDelay: `${delay}ms` }}
     >
       <div className="flex items-start gap-4">
         {avatar ? (
           <img
             src={avatar}
             alt={artisan.fullName}
-            className="h-14 w-14 rounded-full border border-slate-200 object-cover"
+            className="h-14 w-14 rounded-full border border-slate-200 object-cover transition-transform duration-300 group-hover:scale-110"
           />
         ) : (
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-xl font-bold text-amber-700">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-xl font-bold text-amber-700 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6">
             {artisan.fullName.charAt(0).toUpperCase()}
           </span>
         )}
@@ -30,7 +31,7 @@ export default function ArtisanCard({ artisan }: { artisan: Profile }) {
           <p className="mt-0.5 text-xs text-slate-400">{artisan.city}</p>
         </div>
         <div className="text-right">
-          <div className="text-sm font-semibold text-amber-600">
+          <div className="text-sm font-semibold text-amber-600 transition group-hover:scale-110">
             ★ {artisan.avgRating > 0 ? artisan.avgRating.toFixed(1) : 'New'}
           </div>
           <div className="text-xs text-slate-400">

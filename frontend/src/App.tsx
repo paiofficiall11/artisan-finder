@@ -9,6 +9,7 @@ import ArtisanDetail from './pages/ArtisanDetail';
 import BookArtisan from './pages/BookArtisan';
 import ClientDashboard from './pages/ClientDashboard';
 import ArtisanDashboard from './pages/ArtisanDashboard';
+import BookingDetail from './pages/BookingDetail';
 import ProfileEdit from './pages/ProfileEdit';
 import { useAuth } from './context/AuthContext';
 
@@ -39,6 +40,14 @@ export default function App() {
             }
           />
           <Route path="/dashboard" element={<DashboardRedirect />} />
+          <Route
+            path="/bookings/:id"
+            element={
+              <ProtectedRoute>
+                <BookingDetail />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/client"
             element={

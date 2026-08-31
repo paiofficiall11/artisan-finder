@@ -9,6 +9,8 @@ interface BookingCardProps {
   counterpart?: ProfileMini;
   onAction?: (bookingId: string, status: string) => void;
   busy?: boolean;
+  /** Optional stagger delay in ms applied to the entrance animation. */
+  delay?: number;
 }
 
 const dateFormat = new Intl.DateTimeFormat('en-NG', {
@@ -16,7 +18,14 @@ const dateFormat = new Intl.DateTimeFormat('en-NG', {
   timeStyle: 'short',
 });
 
-export default function BookingCard({ booking, role, counterpart, onAction, busy }: BookingCardProps) {
+export default function BookingCard({
+  booking,
+  role,
+  counterpart,
+  onAction,
+  busy,
+  delay = 0,
+}: BookingCardProps) {
   const counterpartId = role === 'client' ? booking.artisanId : booking.clientId;
   const other = counterpart ?? undefined;
   const avatar = other ? avatarUrl(other.avatarFileId) : null;
@@ -26,7 +35,10 @@ export default function BookingCard({ booking, role, counterpart, onAction, busy
   const canComplete = role === 'artisan' && booking.status === 'accepted';
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5">
+    <div
+      className="rounded-xl border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md animate-fade-up"
+      style={{ animationDelay: `${delay}ms` }}
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           {other && (
@@ -58,6 +70,15 @@ export default function BookingCard({ booking, role, counterpart, onAction, busy
           )}
         </div>
         <StatusBadge status={booking.status} />
+      </div>
+
+      <div className="mt-2 text-right">
+        <Link
+          to={`/bookings/${booking.$id}`}
+          className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 hover:underline"
+        >
+          Track live progress →
+        </Link>
       </div>
 
       <dl className="mt-4 grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">

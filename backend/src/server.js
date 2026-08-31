@@ -8,6 +8,7 @@ const multipart = require('@fastify/multipart');
 const fastifyStatic = require('@fastify/static');
 
 const { uploadsDir } = require('./db');
+const { seedIfEmpty } = require('./seed-data');
 const { errorHandler, notFoundHandler } = require('./middleware/error-handler');
 const healthRoutes = require('./routes/health.routes');
 const categoriesRoutes = require('./routes/categories.routes');
@@ -66,6 +67,11 @@ async function buildApp() {
 
 // Only auto-listen when run directly (not when imported by tests/scripts).
 if (require.main === module) {
+  // Seed demo data on a fresh store (e.g. first Render deploy with an empty DB).
+  if (seedIfEmpty()) {
+    console.log('[seed] empty store detected — seeded demo data');
+  }
+
   buildApp()
     .then((app) => {
       const port = Number(process.env.PORT) || 8080;

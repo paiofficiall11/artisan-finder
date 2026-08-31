@@ -1,5 +1,5 @@
 # Render Blueprint — Artisan Finder (SD-06)
-# Backend: Node Web Service · Frontend: Static Site with SPA rewrite
+# Backend: Node Web Service (SQLite) · Frontend: Static Site with SPA rewrite
 # Secret values (sync: false) are set in the Render dashboard or via the API.
 
 services:
@@ -15,28 +15,13 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: APPWRITE_ENDPOINT
-        sync: false
-      - key: APPWRITE_PROJECT_ID
-        sync: false
-      - key: APPWRITE_API_KEY
-        sync: false
-      - key: APPWRITE_DATABASE_ID
-        value: artisan_finder
-      - key: APPWRITE_PROFILES_COLLECTION_ID
-        value: profiles
-      - key: APPWRITE_BOOKINGS_COLLECTION_ID
-        value: bookings
-      - key: APPWRITE_AVATARS_BUCKET_ID
-        value: avatars
-      - key: APPWRITE_PORTFOLIO_BUCKET_ID
-        value: portfolio
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: CORS_ORIGIN
         sync: false
+      # DATA_DIR / UPLOADS_DIR are optional; defaults resolve under backend/.
 
   - type: web
     name: artisan-finder-web
@@ -51,8 +36,4 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        sync: false
-      - key: VITE_APPWRITE_ENDPOINT
-        sync: false
-      - key: VITE_APPWRITE_PROJECT_ID
         sync: false

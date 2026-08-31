@@ -34,17 +34,30 @@ project's **Environment Variables** (Production/Preview/Development), set:
 
 > `VITE_*` vars are baked in at build time on Vercel, so they must be set in the
 > Vercel dashboard before/at deploy. `VITE_APPWRITE_*` vars are no longer needed.
+>
+> **Vercel Root Directory**: set the project's Root Directory to `frontend`
+> (that is where `vercel.json` and `package.json` live). The static output
+> (`dist`) is built there; no further config needed.
 
 ## Local SQLite store (current)
 
 - **Backend**: `backend/src/db.js` (better-sqlite3) stores documents as JSON rows
   (tables `profiles`, `bookings`, `users`, `files`), auto-migrated on boot.
+- **Auto-seed**: on first boot the backend detects an empty store and seeds demo
+  data automatically (8 artisans + demo client/artisan) — so a fresh Render
+  deploy works with zero manual steps. Re-run locally with `npm run db:reset`.
 - **Uploads**: avatar/portfolio images are written to `backend/uploads/` and served
   at `/uploads/*` via `@fastify/static`.
-- **Seed demo data** (8 artisans + demo client/artisan): `npm run db:reset`
+- **Demo accounts**:
   - `client@demo.com` / `client123` (client)
   - `artisan@demo.com` / `artisan123` (artisan)
 - `backend/data/` and `backend/uploads/` are gitignored.
+
+> **Note on persistence**: Render's free tier uses an ephemeral filesystem, so the
+> SQLite DB and uploaded files reset on every redeploy/restart. Because of
+> auto-seed, demo data is recreated automatically; uploaded images do not persist.
+> This is acceptable for a demo and will be replaced once Appwrite scopes are
+> granted.
 
 ## Appwrite console — API key scopes required (for later re-enable)
 

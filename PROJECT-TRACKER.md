@@ -2,7 +2,7 @@
 
 | Phase | Task | Status | Notes |
 |---|---|---|---|
-| 0 | Repo scaffold | In Progress | |
+| 0 | Repo scaffold | Done | Monorepo at ~/Desktop/artisan-finder; Fastify backend + Vite/React18/TS/Tailwind v4 frontend; local git initialized, 2 atomic commits |
 | 0 | Appwrite project created | Not Started | Credentials supplied by owner at Phase 1 |
 | 1 | setup-appwrite.js provisioning | Not Started | |
 | 2 | Backend auth routes | Not Started | |

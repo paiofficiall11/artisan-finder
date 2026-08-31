@@ -56,30 +56,51 @@ const storage = new Storage(client);
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const log = (msg) => console.log(`  ${msg}`);
 
+/**
+ * Wraps an idempotent Appwrite call with retries — every operation in this
+ * script is check-then-create, so a network failure mid-call is safe to repeat.
+ */
+async function withRetry(operation, label, attempts = 5) {
+  let lastError;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      const message = error.message ?? String(error);
+      const transient = message.includes('fetch failed') || error.code >= 500;
+      if (!transient || i === attempts) break;
+      log(`${label} failed (${message}) — retrying ${i}/${attempts - 1}`);
+      await sleep(1000 * i);
+    }
+  }
+  throw lastError;
+}
+
 async function ensureDatabase() {
-  const { databases: existing } = await databases.list();
+  const { databases: existing } = await withRetry(() => databases.list(), 'list databases');
   const found = existing.find((db) => db.$id === APPWRITE_DATABASE_ID);
   if (found) {
     log(`database "${APPWRITE_DATABASE_ID}" already exists`);
     return;
   }
-  await databases.create({ databaseId: APPWRITE_DATABASE_ID, name: 'Artisan Finder' });
+  await withRetry(() => databases.create({ databaseId: APPWRITE_DATABASE_ID, name: 'Artisan Finder' }), 'create database');
   log(`database "${APPWRITE_DATABASE_ID}" created`);
 }
 
 async function ensureCollection(collectionId, name) {
-  const { collections } = await databases.listCollections({ databaseId: APPWRITE_DATABASE_ID });
+  const { collections } = await withRetry(() => databases.listCollections({ databaseId: APPWRITE_DATABASE_ID }), 'list collections');
   const found = collections.find((c) => c.$id === collectionId);
   if (found) {
     log(`collection "${collectionId}" already exists`);
     return;
   }
-  await databases.createCollection({
+  await withRetry(() => databases.createCollection({
     databaseId: APPWRITE_DATABASE_ID,
     collectionId,
     name,
     permissions: [Permission.read(Role.users())],
-  });
+  }), 'create collection');
   log(`collection "${collectionId}" created`);
 }
 
@@ -89,10 +110,10 @@ async function ensureCollection(collectionId, name) {
  * indexes cannot be created against a processing attribute).
  */
 async function ensureAttributes(collectionId, attributes) {
-  const { attributes: existing } = await databases.listAttributes({
+  const { attributes: existing } = await withRetry(() => databases.listAttributes({
     databaseId: APPWRITE_DATABASE_ID,
     collectionId,
-  });
+  }), 'list attributes');
   const existingKeys = new Set(existing.map((a) => a.key));
 
   for (const attr of attributes) {
@@ -100,11 +121,11 @@ async function ensureAttributes(collectionId, attributes) {
       const current = existing.find((a) => a.key === attr.key);
       if (current.status === 'failed') {
         log(`attribute "${attr.key}" exists in failed state — recreating`);
-        await databases.deleteAttribute({
+        await withRetry(() => databases.deleteAttribute({
           databaseId: APPWRITE_DATABASE_ID,
           collectionId,
           key: attr.key,
-        });
+        }), `delete attribute ${attr.key}`);
       } else {
         log(`attribute "${attr.key}" already exists (${current.status})`);
         continue;
@@ -114,45 +135,45 @@ async function ensureAttributes(collectionId, attributes) {
     const base = { databaseId: APPWRITE_DATABASE_ID, collectionId, key: attr.key };
     switch (attr.type) {
       case 'string':
-        await databases.createStringAttribute({
+        await withRetry(() => databases.createStringAttribute({
           ...base,
           size: attr.size,
           required: attr.required,
           array: attr.array || false,
-        });
+        }), `create attribute ${attr.key}`);
         break;
       case 'integer':
-        await databases.createIntegerAttribute({
+        await withRetry(() => databases.createIntegerAttribute({
           ...base,
           required: attr.required,
           min: attr.min,
           default: attr.default,
-        });
+        }), `create attribute ${attr.key}`);
         break;
       case 'float':
-        await databases.createFloatAttribute({
+        await withRetry(() => databases.createFloatAttribute({
           ...base,
           required: attr.required,
           default: attr.default,
-        });
+        }), `create attribute ${attr.key}`);
         break;
       case 'boolean':
-        await databases.createBooleanAttribute({
+        await withRetry(() => databases.createBooleanAttribute({
           ...base,
           required: attr.required,
           default: attr.default,
-        });
+        }), `create attribute ${attr.key}`);
         break;
       case 'datetime':
-        await databases.createDatetimeAttribute({ ...base, required: attr.required });
+        await withRetry(() => databases.createDatetimeAttribute({ ...base, required: attr.required }), `create attribute ${attr.key}`);
         break;
       case 'enum':
-        await databases.createEnumAttribute({
+        await withRetry(() => databases.createEnumAttribute({
           ...base,
           elements: attr.elements,
           required: attr.required,
           default: attr.default,
-        });
+        }), `create attribute ${attr.key}`);
         break;
       default:
         throw new Error(`unknown attribute type: ${attr.type}`);
@@ -164,10 +185,10 @@ async function ensureAttributes(collectionId, attributes) {
   const deadline = Date.now() + 120_000;
   const pending = new Set(attributes.map((a) => a.key));
   while (pending.size > 0) {
-    const { attributes: all } = await databases.listAttributes({
+    const { attributes: all } = await withRetry(() => databases.listAttributes({
       databaseId: APPWRITE_DATABASE_ID,
       collectionId,
-    });
+    }), 'poll attributes');
     for (const key of [...pending]) {
       const attr = all.find((a) => a.key === key);
       if (!attr) continue;
@@ -188,10 +209,10 @@ async function ensureAttributes(collectionId, attributes) {
 }
 
 async function ensureIndexes(collectionId, indexes) {
-  const { indexes: existing } = await databases.listIndexes({
+  const { indexes: existing } = await withRetry(() => databases.listIndexes({
     databaseId: APPWRITE_DATABASE_ID,
     collectionId,
-  });
+  }), 'list indexes');
   const existingKeys = new Set(existing.map((i) => i.key));
 
   for (const index of indexes) {
@@ -199,33 +220,33 @@ async function ensureIndexes(collectionId, indexes) {
       log(`index "${index.key}" already exists`);
       continue;
     }
-    await databases.createIndex({
+    await withRetry(() => databases.createIndex({
       databaseId: APPWRITE_DATABASE_ID,
       collectionId,
       key: index.key,
       type: index.type,
       attributes: index.attributes,
       orders: index.orders,
-    });
+    }), `create index ${index.key}`);
     log(`index "${index.key}" created`);
   }
 }
 
 async function ensureBucket(bucketId, name, maxBytes) {
-  const { buckets } = await storage.listBuckets();
+  const { buckets } = await withRetry(() => storage.listBuckets(), 'list buckets');
   const found = buckets.find((b) => b.$id === bucketId);
   if (found) {
     log(`bucket "${bucketId}" already exists`);
     return;
   }
-  await storage.createStorageBucket({
+  await withRetry(() => storage.createStorageBucket({
     bucketId,
     name,
     permissions: [Permission.read(Role.any())],
     fileSecurity: false,
     maximumFileSize: maxBytes,
     allowedFileExtensions: ['jpg', 'jpeg', 'png'],
-  });
+  }), `create bucket ${bucketId}`);
   log(`bucket "${bucketId}" created`);
 }
 

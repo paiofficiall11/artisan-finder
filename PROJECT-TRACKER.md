@@ -12,7 +12,7 @@
 | 3 | Frontend search/profile pages | In Progress | Code complete (Search w/ debounce+pagination, ArtisanDetail, BookArtisan); verification pending |
 | 3 | Frontend booking + dashboards | In Progress | Code complete (both dashboards, ProfileEdit, uploads); verification pending |
 | 4 | Full journey integration test | Not Started | |
-| 5 | Render backend deploy | Not Started | |
+| 5 | Render backend deploy | Not Started | render.yaml blueprint written (web service, /api/health check) |
 | 5 | Render frontend deploy | Not Started | |
 | 6 | README | Not Started | |
 | 6 | Demo video | Not Started | |

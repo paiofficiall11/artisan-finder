@@ -3,11 +3,11 @@
 | Phase | Task | Status | Notes |
 |---|---|---|---|
 | 0 | Repo scaffold | Done | Monorepo at ~/Desktop/artisan-finder; Fastify backend + Vite/React18/TS/Tailwind v4 frontend; local git initialized, 2 atomic commits |
-| 0 | Appwrite project created | Not Started | Credentials supplied by owner at Phase 1 |
-| 1 | setup-appwrite.js provisioning | Not Started | |
-| 2 | Backend auth routes | Not Started | |
-| 2 | Backend profile routes | Not Started | |
-| 2 | Backend booking routes | Not Started | |
+| 0 | Appwrite project created | Done | fra.cloud.appwrite.io, project 6a95c9c8001fb6fc642a; API key supplied by owner |
+| 1 | setup-appwrite.js provisioning | In Progress | Script written; DB created; blocked: API key missing collections/attributes/indexes/documents/buckets/files/users scopes — owner updating key |
+| 2 | Backend auth routes | In Progress | Code complete (register/login/me, JWT, rate limit); verification pending Appwrite scopes |
+| 2 | Backend profile routes | In Progress | Code complete (search/update/avatar/portfolio); verification pending |
+| 2 | Backend booking routes | In Progress | Code complete (state machine, 409 transitions); verification pending |
 | 3 | Frontend auth pages | Not Started | |
 | 3 | Frontend search/profile pages | Not Started | |
 | 3 | Frontend booking + dashboards | Not Started | |

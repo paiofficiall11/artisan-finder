@@ -1,0 +1,24 @@
+{
+  "name": "artisan-finder-backend",
+  "version": "1.0.0",
+  "description": "Fastify API for the Artisan Finder app (3MTT SD-06)",
+  "type": "commonjs",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env --watch src/server.js",
+    "start": "node src/server.js",
+    "setup:appwrite": "node --env-file-if-exists=.env scripts/setup-appwrite.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.0.0",
+    "@fastify/jwt": "^9.0.0",
+    "@fastify/multipart": "^9.0.0",
+    "@fastify/rate-limit": "^10.0.0",
+    "fastify": "^5.0.0",
+    "node-appwrite": "^16.0.0",
+    "zod": "^4.5.4"
+  }
+}

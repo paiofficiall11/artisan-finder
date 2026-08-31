@@ -45,14 +45,38 @@ async function createBooking(clientUser, input) {
   });
 }
 
-/** Clients see requests sent; artisans see requests received. */
+/**
+ * Clients see requests sent; artisans see requests received. The counterpart
+ * profile snapshot (name/category/avatar/city) for each booking is resolved in
+ * a single extra query so clients can render lists without N+1 lookups.
+ */
 async function myBookings(user) {
   const field = user.role === 'artisan' ? 'artisanId' : 'clientId';
   const result = await appwrite.listDocuments('bookings', [
     Query.equal(field, user.id),
     Query.orderDesc('createdAt'),
   ]);
-  return result.documents;
+
+  const counterpartField = user.role === 'artisan' ? 'clientId' : 'artisanId';
+  const counterpartIds = [...new Set(result.documents.map((b) => b[counterpartField]))];
+
+  const profiles = {};
+  if (counterpartIds.length > 0) {
+    const counterpartResult = await appwrite.listDocuments('profiles', [
+      Query.equal('userId', counterpartIds),
+      Query.limit(100),
+    ]);
+    for (const profile of counterpartResult.documents) {
+      profiles[profile.userId] = {
+        fullName: profile.fullName,
+        category: profile.category,
+        avatarFileId: profile.avatarFileId,
+        city: profile.city,
+      };
+    }
+  }
+
+  return { items: result.documents, profiles };
 }
 
 async function getBooking(user, bookingId) {

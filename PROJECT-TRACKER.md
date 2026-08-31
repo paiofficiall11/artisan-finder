@@ -8,9 +8,9 @@
 | 2 | Backend auth routes | In Progress | Code complete (register/login/me, JWT, rate limit); verification pending Appwrite scopes |
 | 2 | Backend profile routes | In Progress | Code complete (search/update/avatar/portfolio); verification pending |
 | 2 | Backend booking routes | In Progress | Code complete (state machine, 409 transitions); verification pending |
-| 3 | Frontend auth pages | Not Started | |
-| 3 | Frontend search/profile pages | Not Started | |
-| 3 | Frontend booking + dashboards | Not Started | |
+| 3 | Frontend auth pages | In Progress | Code complete (Home/Login/Register, AuthContext, ProtectedRoute); browser verification pending backend |
+| 3 | Frontend search/profile pages | In Progress | Code complete (Search w/ debounce+pagination, ArtisanDetail, BookArtisan); verification pending |
+| 3 | Frontend booking + dashboards | In Progress | Code complete (both dashboards, ProfileEdit, uploads); verification pending |
 | 4 | Full journey integration test | Not Started | |
 | 5 | Render backend deploy | Not Started | |
 | 5 | Render frontend deploy | Not Started | |
